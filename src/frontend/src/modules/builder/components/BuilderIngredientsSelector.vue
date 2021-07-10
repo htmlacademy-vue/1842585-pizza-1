@@ -18,7 +18,8 @@
               <RadioButton
                 name="sauce"
                 :value="souce.type"
-                :checked="index === 0"
+                :checked="souce.type === currentSauce"
+                @changed="changed"
               />
             </SelectorItem>
           </label>
@@ -34,12 +35,15 @@
               class="ingridients__item"
             >
               <SelectorItem
-                className="filling filling--ingridient"
-                :styleText="`--ingridient-img: url(${ingredient.image})`"
+                :class="`filling filling--${ingredient.type}`"
                 :description="ingredient.name"
-                :transferData="{ ingridient: ingredient.name }"
+                :transferData="getIngridient(ingredient.type)"
               />
-              <ItemCounter />
+              <ItemCounter
+                :name="ingredient.type"
+                :count="getIngridient(ingredient.type).ingridient.count"
+                @setCount="changed"
+              />
             </li>
           </ul>
         </div>
@@ -57,6 +61,24 @@ const sauceTypes = {
   Сливочный: "creamy",
 };
 
+const ingridientTypes = {
+  Грибы: "mushrooms",
+  Чеддер: "cheddar",
+  Салями: "salami",
+  Ветчина: "ham",
+  Ананас: "ananas",
+  Бекон: "bacon",
+  Лук: "onion",
+  Чили: "chile",
+  Халапеньо: "jalapeno",
+  Маслины: "olives",
+  Томаты: "tomatoes",
+  Лосось: "salmon",
+  Моцарелла: "mozzarella",
+  Пармезан: "parmesan",
+  "Блю чиз": "blue_cheese",
+};
+
 export default {
   name: "BuilderIngredientsSelector",
   components: {
@@ -69,27 +91,57 @@ export default {
       type: Array,
       default: () => [],
     },
-    ingredients: {
+    ingredientsList: {
+      type: Array,
+      default: () => [],
+    },
+    currentSauce: {
+      type: String,
+      default: "tomato",
+    },
+    currentIngridients: {
       type: Array,
       default: () => [],
     },
   },
   data() {
     const sauces = this.saucesList.map((sauce) => {
-      sauce.type = sauceTypes[sauce.name];
-      return sauce;
+      return {
+        ...sauce,
+        type: sauceTypes[sauce.name],
+      };
     });
-
+    const ingredients = this.ingredientsList.map((ingredient) => {
+      return {
+        ...ingredient,
+        type: ingridientTypes[ingredient.name],
+      };
+    });
     return {
       sauces,
+      ingredients,
     };
+  },
+  methods: {
+    changed(transferData) {
+      this.$emit("changed", transferData);
+    },
+    getIngridient(name) {
+      let currentIngridient = this.currentIngridients.find((ingridient) => {
+        return ingridient.name === name;
+      });
+      if (!currentIngridient) {
+        currentIngridient = {
+          name,
+          count: 0,
+        };
+      }
+      return {
+        ingridient: {
+          ...currentIngridient,
+        },
+      };
+    },
   },
 };
 </script>
-<style lang="scss">
-.filling {
-  &--ingridient::before {
-    background-image: var(--ingridient-img);
-  }
-}
-</style>

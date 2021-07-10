@@ -10,13 +10,14 @@
         >
           <SelectorItem
             :description="size.name"
-            :transferData="{ size: size.type }"
+            :transferData="{ diameter: size.type }"
           >
             <RadioButton
               name="diameter"
               :value="size.type"
-              :checked="index === 1"
+              :checked="size.type === currentSize"
               className="visually-hidden"
+              @changed="changed"
             />
           </SelectorItem>
         </label>
@@ -45,15 +46,26 @@ export default {
       type: Array,
       default: () => [],
     },
+    currentSize: {
+      type: String,
+      default: "normal",
+    },
   },
   data() {
     const sizes = this.sizesList.map((size) => {
-      size.type = sizeTypes[size.multiplier];
-      return size;
+      return {
+        ...size,
+        type: sizeTypes[size.multiplier],
+      };
     });
     return {
       sizes,
     };
+  },
+  methods: {
+    changed(transferData) {
+      this.$emit("changed", transferData);
+    },
   },
 };
 </script>

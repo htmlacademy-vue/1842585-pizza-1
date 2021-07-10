@@ -20,16 +20,24 @@
 <script>
 export default {
   name: "ItemCounter",
-  data() {
-    return {
-      count: 0,
-    };
+  props: {
+    name: {
+      type: String,
+      required: true,
+    },
+    count: {
+      type: Number,
+      default: 0,
+    },
   },
   methods: {
     setCount(value) {
-      if ((this.count !== 0 && value < 0) || value > 0) {
-        this.count += value;
-      }
+      this.$emit("setCount", {
+        ingridient: {
+          name: this.name,
+          count: Math.min(this.count + value, 3),
+        },
+      });
     },
   },
 };

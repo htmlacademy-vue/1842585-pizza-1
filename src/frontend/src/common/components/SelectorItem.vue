@@ -2,7 +2,7 @@
   <AppDrag :transferData="transferData">
     <slot />
     <b v-if="name !== ''">{{ name }}</b>
-    <span v-if="description !== ''" :class="className" :style="styleText">
+    <span v-if="description !== ''">
       {{ description }}
     </span>
   </AppDrag>
@@ -16,14 +16,6 @@ export default {
     AppDrag,
   },
   props: {
-    className: {
-      type: String,
-      default: "",
-    },
-    styleText: {
-      type: String,
-      default: "",
-    },
     name: {
       type: String,
       default: "",

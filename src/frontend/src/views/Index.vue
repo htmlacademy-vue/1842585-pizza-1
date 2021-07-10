@@ -6,15 +6,26 @@
         <h1 class="title title--big">Конструктор пиццы</h1>
 
         <!-- Блок выбора толщины пиццы-->
-        <BuilderDoughSelector :doughList="doughList" />
+        <BuilderDoughSelector
+          :doughList="doughList"
+          :currentDough="result.dough"
+          @changed="changed"
+        />
 
         <!-- Блок выбора диаметра пиццы-->
-        <BuilderSizeSelector :sizesList="sizes" />
+        <BuilderSizeSelector
+          :sizesList="sizesList"
+          :currentSize="result.diameter"
+          @changed="changed"
+        />
 
         <!-- Блок выбора ингридиентов пиццы-->
         <BuilderIngredientsSelector
-          :saucesList="sauces"
-          :ingredients="ingredients"
+          :saucesList="saucesList"
+          :ingredientsList="ingredientsList"
+          :currentIngridients="result.ingridients"
+          :currentSauce="result.sauce"
+          @changed="changed"
         />
 
         <!-- Блок общего результата-->
@@ -27,7 +38,12 @@
             />
           </label>
 
-          <BuilderPizzaView @changed="changed" />
+          <BuilderPizzaView
+            :doughType="result.dough"
+            :sauce="result.sauce"
+            :ingridients="result.ingridients"
+            @changed="changed"
+          />
           <BuilderPriceCounter />
         </div>
       </div>
@@ -44,10 +60,6 @@ import BuilderIngredientsSelector from "@/modules/builder/components/BuilderIngr
 import BuilderPizzaView from "@/modules/builder/components/BuilderPizzaView";
 import BuilderPriceCounter from "@/modules/builder/components/BuilderPriceCounter";
 
-let result = {
-  ingridients: [],
-};
-
 export default {
   name: "Index",
   components: {
@@ -59,25 +71,31 @@ export default {
     BuilderPriceCounter,
   },
   data() {
+    let result = {
+      ingridients: [],
+    };
     return {
       doughList: pizza.dough,
-      sizes: pizza.sizes,
-      sauces: pizza.sauces,
-      ingredients: pizza.ingredients,
+      sizesList: pizza.sizes,
+      saucesList: pizza.sauces,
+      ingredientsList: pizza.ingredients,
+      result,
     };
   },
   methods: {
     changed(transferData) {
       if (transferData.ingridient) {
-        const ingridientCount = result.ingridients[transferData.ingridient];
-        result.ingridients = {
-          ...result.ingridients,
-          [transferData.ingridient]: ingridientCount ? ingridientCount + 1 : 1,
-        };
+        const ingridient = this.result.ingridients.find((ingridientItem) => {
+          return ingridientItem.name === transferData.ingridient.name;
+        });
+        if (ingridient) {
+          ingridient.count = transferData.ingridient.count;
+        } else {
+          this.result.ingridients.push(transferData.ingridient);
+        }
       } else {
-        result = { ...result, ...transferData };
+        this.result = { ...this.result, ...transferData };
       }
-      console.log(result);
     },
   },
 };

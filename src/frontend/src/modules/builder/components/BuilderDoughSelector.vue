@@ -17,7 +17,8 @@
               name="dough"
               :value="dough.type"
               className="visually-hidden"
-              :checked="index === 0"
+              :checked="dough.type === currentDough"
+              @changed="changed"
             />
           </SelectorItem>
         </label>
@@ -45,16 +46,26 @@ export default {
       type: Array,
       default: () => [],
     },
+    currentDough: {
+      type: String,
+      default: "light",
+    },
   },
   data() {
     const doughItems = this.doughList.map((dough) => {
-      dough.type = doughType[dough.name];
-      return dough;
+      return {
+        ...dough,
+        type: doughType[dough.name],
+      };
     });
-
     return {
       doughItems,
     };
+  },
+  methods: {
+    changed(transferData) {
+      this.$emit("changed", transferData);
+    },
   },
 };
 </script>

@@ -5,6 +5,7 @@
     :value="value"
     :class="className"
     :checked="checked"
+    @click="onClick(name, value)"
   />
 </template>
 <script>
@@ -28,6 +29,11 @@ export default {
     className: {
       type: String,
       default: "",
+    },
+  },
+  methods: {
+    onClick(name, value) {
+      this.$emit("changed", { [name]: value });
     },
   },
 };
