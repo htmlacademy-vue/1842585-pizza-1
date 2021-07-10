@@ -35,7 +35,7 @@ export default {
       this.$emit("setCount", {
         ingridient: {
           name: this.name,
-          count: Math.min(this.count + value, 3),
+          count: Math.max(Math.min(this.count + value, 3), 0),
         },
       });
     },
