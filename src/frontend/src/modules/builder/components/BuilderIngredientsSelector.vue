@@ -13,7 +13,7 @@
           >
             <SelectorItem
               :description="souce.name"
-              :transferData="{ sauce: souce.type }"
+              :transferData="{ sauce: souce.type, saucePrice: souce.price }"
             >
               <RadioButton
                 name="sauce"
@@ -37,12 +37,13 @@
               <SelectorItem
                 :class="`filling filling--${ingredient.type}`"
                 :description="ingredient.name"
-                :transferData="getIngridient(ingredient.type)"
+                :transferData="getIngridient(ingredient.type, ingredient.price)"
               />
               <ItemCounter
                 :name="ingredient.type"
-                :count="getIngridient(ingredient.type).ingridient.count"
-                @setCount="changed"
+                :count="getIngridient(ingredient.type).count"
+                :price="ingredient.price"
+                @setCount="addIngridient"
               />
             </li>
           </ul>
@@ -126,20 +127,22 @@ export default {
     changed(transferData) {
       this.$emit("changed", transferData);
     },
-    getIngridient(name) {
+    addIngridient(ingridient) {
+      this.$emit("addIngridient", ingridient);
+    },
+    getIngridient(name, price = 0) {
       let currentIngridient = this.currentIngridients.find((ingridient) => {
         return ingridient.name === name;
       });
       if (!currentIngridient) {
         currentIngridient = {
           name,
+          price,
           count: 0,
         };
       }
       return {
-        ingridient: {
-          ...currentIngridient,
-        },
+        ...currentIngridient,
       };
     },
   },

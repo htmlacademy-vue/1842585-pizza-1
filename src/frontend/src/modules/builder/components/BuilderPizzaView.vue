@@ -33,13 +33,12 @@ export default {
   },
   methods: {
     drop(transferData) {
-      if (transferData.ingridient) {
-        transferData.ingridient.count = Math.min(
-          transferData.ingridient.count + 1,
-          3
-        );
+      if (transferData.count !== undefined) {
+        transferData.count = Math.min(transferData.count + 1, 3);
+        this.$emit("addIngridient", transferData);
+      } else {
+        this.$emit("changed", transferData);
       }
-      this.$emit("changed", transferData);
     },
     getSize() {
       return this.doughType === "large" ? "big" : "small";

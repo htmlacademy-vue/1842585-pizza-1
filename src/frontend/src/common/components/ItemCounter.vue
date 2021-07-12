@@ -3,7 +3,9 @@
     <button
       type="button"
       @click="setCount(-1)"
-      class="counter__button counter__button--disabled counter__button--minus"
+      class="counter__button counter__button--minus"
+      :class="{ 'counter__button--disabled': count === 0 }"
+      :disabled="count === 0"
     >
       <span class="visually-hidden">Меньше</span>
     </button>
@@ -12,6 +14,8 @@
       type="button"
       @click="setCount(1)"
       class="counter__button counter__button--plus"
+      :class="{ 'counter__button--disabled': count === 3 }"
+      :disabled="count === 3"
     >
       <span class="visually-hidden">Больше</span>
     </button>
@@ -25,6 +29,10 @@ export default {
       type: String,
       required: true,
     },
+    price: {
+      type: Number,
+      default: 0,
+    },
     count: {
       type: Number,
       default: 0,
@@ -33,10 +41,9 @@ export default {
   methods: {
     setCount(value) {
       this.$emit("setCount", {
-        ingridient: {
-          name: this.name,
-          count: Math.max(Math.min(this.count + value, 3), 0),
-        },
+        name: this.name,
+        count: Math.max(Math.min(this.count + value, 3), 0),
+        price: this.price,
       });
     },
   },

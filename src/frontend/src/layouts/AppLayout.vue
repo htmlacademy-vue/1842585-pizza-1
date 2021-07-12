@@ -11,7 +11,7 @@
       </a>
     </div>
     <div class="header__cart">
-      <a href="#">0 ₽</a>
+      <a href="#">{{ sum }} ₽</a>
     </div>
     <div class="header__user">
       <a href="#" class="header__login"><span>Войти</span></a>
@@ -21,5 +21,11 @@
 <script>
 export default {
   name: "AppLayout",
+  props: {
+    sum: {
+      type: Number,
+      default: 0,
+    },
+  },
 };
 </script>

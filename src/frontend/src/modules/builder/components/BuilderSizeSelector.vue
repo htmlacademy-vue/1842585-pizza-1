@@ -10,7 +10,7 @@
         >
           <SelectorItem
             :description="size.name"
-            :transferData="{ diameter: size.type }"
+            :transferData="{ diameter: size.type, multiplier: size.multiplier }"
           >
             <RadioButton
               name="diameter"
@@ -64,7 +64,13 @@ export default {
   },
   methods: {
     changed(transferData) {
-      this.$emit("changed", transferData);
+      const currentSize = this.sizes.find(
+        (size) => size.type === transferData.diameter
+      );
+      this.$emit("changed", {
+        ...transferData,
+        multiplier: currentSize.multiplier,
+      });
     },
   },
 };

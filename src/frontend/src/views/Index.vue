@@ -1,6 +1,6 @@
 <template>
   <div>
-    <AppLayout />
+    <AppLayout :sum="getCartSum()" />
     <form action="#" method="post">
       <div class="content__wrapper">
         <h1 class="title title--big">Конструктор пиццы</h1>
@@ -26,6 +26,7 @@
           :currentIngridients="result.ingridients"
           :currentSauce="result.sauce"
           @changed="changed"
+          @addIngridient="addIngridient"
         />
 
         <!-- Блок общего результата-->
@@ -43,8 +44,9 @@
             :sauce="result.sauce"
             :ingridients="result.ingridients"
             @changed="changed"
+            @addIngridient="addIngridient"
           />
-          <BuilderPriceCounter />
+          <BuilderPriceCounter :sum="result.sum" @addToCart="addToCart" />
         </div>
       </div>
     </form>
@@ -72,30 +74,58 @@ export default {
   },
   data() {
     let result = {
+      doughPrice: 0,
+      multiplier: 0,
+      saucePrice: 0,
       ingridients: [],
+      sum: 0,
     };
+    const cart = [];
     return {
       doughList: pizza.dough,
       sizesList: pizza.sizes,
       saucesList: pizza.sauces,
       ingredientsList: pizza.ingredients,
       result,
+      cart,
     };
   },
   methods: {
-    changed(transferData) {
-      if (transferData.ingridient) {
-        const ingridient = this.result.ingridients.find((ingridientItem) => {
-          return ingridientItem.name === transferData.ingridient.name;
-        });
-        if (ingridient) {
-          ingridient.count = transferData.ingridient.count;
-        } else {
-          this.result.ingridients.push(transferData.ingridient);
-        }
+    changed(pizzaComponent) {
+      this.result = { ...this.result, ...pizzaComponent };
+      this.changeSum();
+    },
+    addIngridient(newIngridient) {
+      const ingridient = this.result.ingridients.find((ingridientItem) => {
+        return ingridientItem.name === newIngridient.name;
+      });
+      if (ingridient) {
+        ingridient.count = newIngridient.count;
       } else {
-        this.result = { ...this.result, ...transferData };
+        this.result.ingridients.push(newIngridient);
       }
+      this.changeSum();
+    },
+    changeSum() {
+      this.result.sum = this.result.ingridients.reduce((sum, ingridient) => {
+        return sum + ingridient.count * ingridient.price;
+      }, this.result.doughPrice + this.result.saucePrice);
+      this.result.sum = this.result.sum * this.result.multiplier;
+    },
+    addToCart() {
+      this.cart.push({ ...this.result });
+      this.result = {
+        doughPrice: 0,
+        multiplier: 0,
+        saucePrice: 0,
+        ingridients: [],
+        sum: 0,
+      };
+    },
+    getCartSum() {
+      return this.cart.reduce((sum, cartItem) => {
+        return sum + cartItem.sum;
+      }, 0);
     },
   },
 };

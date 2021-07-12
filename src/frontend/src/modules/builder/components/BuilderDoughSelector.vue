@@ -11,7 +11,7 @@
           <SelectorItem
             :name="dough.name"
             :description="dough.description"
-            :transferData="{ dough: dough.type }"
+            :transferData="{ dough: dough.type, doughPrice: dough.price }"
           >
             <RadioButton
               name="dough"

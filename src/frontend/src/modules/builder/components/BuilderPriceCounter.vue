@@ -1,7 +1,13 @@
 <template>
   <div class="content__result">
-    <p>Итого: 0 ₽</p>
-    <button type="submit" class="button button--disabled" disabled>
+    <p>Итого: {{ sum }} ₽</p>
+    <button
+      type="submit"
+      class="button"
+      :class="{ 'button--disabled': sum === 0 }"
+      :disabled="sum === 0"
+      @click.prevent="$emit('addToCart')"
+    >
       Готовьте!
     </button>
   </div>
@@ -9,5 +15,11 @@
 <script>
 export default {
   name: "BuilderPriceCounter",
+  props: {
+    sum: {
+      type: Number,
+      default: 0,
+    },
+  },
 };
 </script>
