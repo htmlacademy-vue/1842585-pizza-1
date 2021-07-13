@@ -1,61 +1,57 @@
 <template>
-  <div>
-    <AppLayout :sum="getCartSum()" />
-    <form action="#" method="post">
-      <div class="content__wrapper">
-        <h1 class="title title--big">Конструктор пиццы</h1>
+  <form action="#" method="post">
+    <div class="content__wrapper">
+      <h1 class="title title--big">Конструктор пиццы</h1>
 
-        <!-- Блок выбора толщины пиццы-->
-        <BuilderDoughSelector
-          :doughList="doughList"
-          :currentDough="result.dough"
-          @changed="changed"
-        />
+      <!-- Блок выбора толщины пиццы-->
+      <BuilderDoughSelector
+        :doughList="doughList"
+        :currentDough="result.dough"
+        @changed="changed"
+      />
 
-        <!-- Блок выбора диаметра пиццы-->
-        <BuilderSizeSelector
-          :sizesList="sizesList"
-          :currentSize="result.diameter"
-          @changed="changed"
-        />
+      <!-- Блок выбора диаметра пиццы-->
+      <BuilderSizeSelector
+        :sizesList="sizesList"
+        :currentSize="result.diameter"
+        @changed="changed"
+      />
 
-        <!-- Блок выбора ингридиентов пиццы-->
-        <BuilderIngredientsSelector
-          :saucesList="saucesList"
-          :ingredientsList="ingredientsList"
-          :currentIngridients="result.ingridients"
-          :currentSauce="result.sauce"
+      <!-- Блок выбора ингридиентов пиццы-->
+      <BuilderIngredientsSelector
+        :saucesList="saucesList"
+        :ingredientsList="ingredientsList"
+        :currentIngridients="result.ingridients"
+        :currentSauce="result.sauce"
+        @changed="changed"
+        @addIngridient="addIngridient"
+      />
+
+      <!-- Блок общего результата-->
+      <div class="content__pizza">
+        <label class="input">
+          <input
+            type="text"
+            name="pizza_name"
+            placeholder="Введите название пиццы"
+          />
+        </label>
+
+        <BuilderPizzaView
+          :doughType="result.dough"
+          :sauce="result.sauce"
+          :ingridients="result.ingridients"
           @changed="changed"
           @addIngridient="addIngridient"
         />
-
-        <!-- Блок общего результата-->
-        <div class="content__pizza">
-          <label class="input">
-            <input
-              type="text"
-              name="pizza_name"
-              placeholder="Введите название пиццы"
-            />
-          </label>
-
-          <BuilderPizzaView
-            :doughType="result.dough"
-            :sauce="result.sauce"
-            :ingridients="result.ingridients"
-            @changed="changed"
-            @addIngridient="addIngridient"
-          />
-          <BuilderPriceCounter :sum="result.sum" @addToCart="addToCart" />
-        </div>
+        <BuilderPriceCounter :sum="result.sum" @addToCart="addToCart" />
       </div>
-    </form>
-  </div>
+    </div>
+  </form>
 </template>
 
 <script>
 import pizza from "@/static/pizza.json";
-import AppLayout from "@/layouts/AppLayout";
 import BuilderDoughSelector from "@/modules/builder/components/BuilderDoughSelector";
 import BuilderSizeSelector from "@/modules/builder/components/BuilderSizeSelector";
 import BuilderIngredientsSelector from "@/modules/builder/components/BuilderIngredientsSelector";
@@ -65,7 +61,6 @@ import BuilderPriceCounter from "@/modules/builder/components/BuilderPriceCounte
 export default {
   name: "Index",
   components: {
-    AppLayout,
     BuilderDoughSelector,
     BuilderSizeSelector,
     BuilderIngredientsSelector,
