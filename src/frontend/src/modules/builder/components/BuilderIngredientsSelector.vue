@@ -7,19 +7,19 @@
         <div class="ingridients__sauce">
           <p>Основной соус:</p>
           <label
-            v-for="(souce, index) in sauces"
+            v-for="(sauce, index) in sauces"
             :key="index"
             class="radio ingridients__input"
           >
             <SelectorItem
-              :description="souce.name"
-              :transferData="{ sauce: souce.type, saucePrice: souce.price }"
+              :description="sauce.name"
+              :transferData="{ option: 'sauce', value: sauce }"
             >
               <RadioButton
                 name="sauce"
-                :value="souce.type"
-                :checked="souce.type === currentSauce"
-                @changed="changed"
+                :value="sauce"
+                :checked="sauce.type === pizza.sauce.type"
+                @setOption="setOption"
               />
             </SelectorItem>
           </label>
@@ -37,13 +37,12 @@
               <SelectorItem
                 :class="`filling filling--${ingredient.type}`"
                 :description="ingredient.name"
-                :transferData="getIngridient(ingredient.type, ingredient.price)"
+                :transferData="getIngredient(ingredient.type)"
               />
               <ItemCounter
-                :name="ingredient.type"
-                :count="getIngridient(ingredient.type).count"
-                :price="ingredient.price"
-                @setCount="addIngridient"
+                :item="getIngredient(ingredient.type)"
+                class="counter--orange ingridients__counter"
+                @setCount="addIngredient"
               />
             </li>
           </ul>
@@ -53,32 +52,11 @@
   </div>
 </template>
 <script>
+import { mapState, mapActions, mapGetters } from "vuex";
+
 import ItemCounter from "@/common/components/ItemCounter";
 import RadioButton from "@/common/components/RadioButton";
 import SelectorItem from "@/common/components/SelectorItem";
-
-const sauceTypes = {
-  Томатный: "tomato",
-  Сливочный: "creamy",
-};
-
-const ingridientTypes = {
-  Грибы: "mushrooms",
-  Чеддер: "cheddar",
-  Салями: "salami",
-  Ветчина: "ham",
-  Ананас: "ananas",
-  Бекон: "bacon",
-  Лук: "onion",
-  Чили: "chile",
-  Халапеньо: "jalapeno",
-  Маслины: "olives",
-  Томаты: "tomatoes",
-  Лосось: "salmon",
-  Моцарелла: "mozzarella",
-  Пармезан: "parmesan",
-  "Блю чиз": "blue_cheese",
-};
 
 export default {
   name: "BuilderIngredientsSelector",
@@ -87,64 +65,12 @@ export default {
     RadioButton,
     SelectorItem,
   },
-  props: {
-    saucesList: {
-      type: Array,
-      default: () => [],
-    },
-    ingredientsList: {
-      type: Array,
-      default: () => [],
-    },
-    currentSauce: {
-      type: String,
-      default: "tomato",
-    },
-    currentIngridients: {
-      type: Array,
-      default: () => [],
-    },
-  },
-  data() {
-    const sauces = this.saucesList.map((sauce) => {
-      return {
-        ...sauce,
-        type: sauceTypes[sauce.name],
-      };
-    });
-    const ingredients = this.ingredientsList.map((ingredient) => {
-      return {
-        ...ingredient,
-        type: ingridientTypes[ingredient.name],
-      };
-    });
-    return {
-      sauces,
-      ingredients,
-    };
+  computed: {
+    ...mapState("Builder", ["ingredients", "sauces", "pizza"]),
+    ...mapGetters("Builder", ["getIngredient"]),
   },
   methods: {
-    changed(transferData) {
-      this.$emit("changed", transferData);
-    },
-    addIngridient(ingridient) {
-      this.$emit("addIngridient", ingridient);
-    },
-    getIngridient(name, price = 0) {
-      let currentIngridient = this.currentIngridients.find((ingridient) => {
-        return ingridient.name === name;
-      });
-      if (!currentIngridient) {
-        currentIngridient = {
-          name,
-          price,
-          count: 0,
-        };
-      }
-      return {
-        ...currentIngridient,
-      };
-    },
+    ...mapActions("Builder", ["addIngredient", "setOption"]),
   },
 };
 </script>

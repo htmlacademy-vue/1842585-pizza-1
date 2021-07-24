@@ -1,15 +1,16 @@
 <template>
   <AppDrop @drop="drop">
     <div class="content__constructor">
-      <div :class="`pizza pizza--foundation--${getSize()}-${sauce}`">
+      <div :class="`pizza pizza--foundation--${getSize()}-${pizza.sauce.type}`">
         <div class="pizza__wrapper">
-          <div v-html="getIngridientsTemplate()"></div>
+          <div v-html="getIngredientsTemplate()"></div>
         </div>
       </div>
     </div>
   </AppDrop>
 </template>
 <script>
+import { mapState, mapActions } from "vuex";
 import AppDrop from "@/common/components/AppDrop";
 
 export default {
@@ -17,49 +18,42 @@ export default {
   components: {
     AppDrop,
   },
-  props: {
-    doughType: {
-      type: String,
-      default: "small",
-    },
-    sauce: {
-      type: String,
-      default: "tomato",
-    },
-    ingridients: {
-      type: Array,
-      default: () => [],
-    },
+  computed: {
+    ...mapState("Builder", ["pizza"]),
   },
   methods: {
+    ...mapActions("Builder", ["addIngredient", "setOption"]),
     drop(transferData) {
       if (transferData.count !== undefined) {
-        transferData.count = Math.min(transferData.count + 1, 3);
-        this.$emit("addIngridient", transferData);
+        transferData.count = Math.min(
+          transferData.count + 1,
+          transferData.maxCount
+        );
+        this.addIngredient(transferData);
       } else {
-        this.$emit("changed", transferData);
+        this.setOption(transferData);
       }
     },
     getSize() {
-      return this.doughType === "large" ? "big" : "small";
+      return this.pizza.dough.type === "large" ? "big" : "small";
     },
-    getIngridientClass(name, position) {
+    getIngredientClass(name, position) {
       return `
         pizza__filling pizza__filling--${name}
         ${position === 1 ? "pizza__filling--second" : ""}
         ${position === 2 ? "pizza__filling--third" : ""}
       `;
     },
-    getIngridientsTemplate() {
+    getIngredientsTemplate() {
       let result = "";
-      this.ingridients.forEach((ingridient) => {
-        for (let i = 0; i < ingridient.count; i++) {
+      this.pizza.ingredients.forEach((ingredient) => {
+        for (let i = 0; i < ingredient.count; i++) {
           result =
             result +
             `
               <div
-                key="${ingridient.name + i}"
-                class="${this.getIngridientClass(ingridient.name, i)}"
+                key="${ingredient.type + i}"
+                class="${this.getIngredientClass(ingredient.type, i)}"
               ></div>
             `;
         }

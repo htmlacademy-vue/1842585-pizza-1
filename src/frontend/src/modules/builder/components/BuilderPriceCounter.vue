@@ -4,21 +4,40 @@
     <button
       type="submit"
       class="button"
-      :class="{ 'button--disabled': sum === 0 }"
-      :disabled="sum === 0"
-      @click.prevent="$emit('addToCart')"
+      :class="{ 'button--disabled': notRequired }"
+      :disabled="notRequired"
+      @click.prevent="addToCart"
     >
       Готовьте!
     </button>
   </div>
 </template>
 <script>
+import { mapState, mapGetters, mapActions } from "vuex";
+
 export default {
   name: "BuilderPriceCounter",
-  props: {
-    sum: {
-      type: Number,
-      default: 0,
+  computed: {
+    ...mapState("Builder", ["pizza"]),
+    ...mapGetters("Builder", ["sum"]),
+    notRequired() {
+      return !this.sum || !this.pizza.name;
+    },
+  },
+  methods: {
+    ...mapActions("Cart", ["addPizza", "updatePizza"]),
+    ...mapActions("Builder", ["resetPizza"]),
+    addToCart() {
+      const value = {
+        ...this.pizza,
+        count: this.pizza.count ? this.pizza.count : 1,
+      };
+      if (value.id) {
+        this.updatePizza(value);
+      } else {
+        this.addPizza(value);
+      }
+      this.resetPizza();
     },
   },
 };

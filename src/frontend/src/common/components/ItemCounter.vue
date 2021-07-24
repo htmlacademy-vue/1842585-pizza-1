@@ -1,21 +1,32 @@
 <template>
-  <div class="counter counter--orange ingridients__counter">
+  <div class="counter">
     <button
       type="button"
       @click="setCount(-1)"
       class="counter__button counter__button--minus"
-      :class="{ 'counter__button--disabled': count === 0 }"
-      :disabled="count === 0"
+      :class="{
+        'counter__button--disabled': item.count === 0,
+        [buttonClass]: item.count > 0,
+      }"
+      :disabled="item.count === 0"
     >
       <span class="visually-hidden">Меньше</span>
     </button>
-    <input type="text" name="counter" class="counter__input" :value="count" />
+    <input
+      type="text"
+      name="counter"
+      class="counter__input"
+      :value="item.count"
+    />
     <button
       type="button"
       @click="setCount(1)"
       class="counter__button counter__button--plus"
-      :class="{ 'counter__button--disabled': count === 3 }"
-      :disabled="count === 3"
+      :class="{
+        'counter__button--disabled': isDisable,
+        [buttonClass]: !isDisable,
+      }"
+      :disabled="isDisable"
     >
       <span class="visually-hidden">Больше</span>
     </button>
@@ -25,25 +36,31 @@
 export default {
   name: "ItemCounter",
   props: {
-    name: {
-      type: String,
+    item: {
+      type: Object,
       required: true,
     },
-    price: {
-      type: Number,
-      default: 0,
+    buttonClass: {
+      type: String,
+      default: "",
     },
-    count: {
-      type: Number,
-      default: 0,
+  },
+  computed: {
+    isDisable() {
+      return this.item.maxCount ? this.item.count >= this.item.maxCount : false;
     },
   },
   methods: {
     setCount(value) {
+      const count = Math.max(
+        this.item.maxCount
+          ? Math.min(this.item.count + value, this.item.maxCount)
+          : this.item.count + value,
+        0
+      );
       this.$emit("setCount", {
-        name: this.name,
-        count: Math.max(Math.min(this.count + value, 3), 0),
-        price: this.price,
+        ...this.item,
+        count,
       });
     },
   },

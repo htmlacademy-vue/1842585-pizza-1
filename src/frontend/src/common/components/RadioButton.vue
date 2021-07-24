@@ -18,9 +18,8 @@ export default {
       validator: (v) => v.length,
     },
     value: {
-      type: String,
+      type: Object,
       required: true,
-      validator: (v) => v.length,
     },
     checked: {
       type: Boolean,
@@ -33,7 +32,7 @@ export default {
   },
   methods: {
     onClick(name, value) {
-      this.$emit("changed", { [name]: value });
+      this.$emit("setOption", { option: name, value });
     },
   },
 };
