@@ -10,14 +10,14 @@
         >
           <SelectorItem
             :description="size.name"
-            :transferData="{ diameter: size.type, multiplier: size.multiplier }"
+            :transferData="{ option: 'size', value: size }"
           >
             <RadioButton
-              name="diameter"
-              :value="size.type"
-              :checked="size.type === currentSize"
+              name="size"
+              :value="size"
+              :checked="size.type === pizza.size.type"
               className="visually-hidden"
-              @changed="changed"
+              @setOption="setOption"
             />
           </SelectorItem>
         </label>
@@ -26,14 +26,10 @@
   </div>
 </template>
 <script>
+import { mapState, mapActions } from "vuex";
+
 import SelectorItem from "@/common/components/SelectorItem";
 import RadioButton from "@/common/components/RadioButton";
-
-const sizeTypes = {
-  1: "small",
-  2: "normal",
-  3: "big",
-};
 
 export default {
   name: "BuilderSizeSelector",
@@ -41,37 +37,11 @@ export default {
     SelectorItem,
     RadioButton,
   },
-  props: {
-    sizesList: {
-      type: Array,
-      default: () => [],
-    },
-    currentSize: {
-      type: String,
-      default: "normal",
-    },
-  },
-  data() {
-    const sizes = this.sizesList.map((size) => {
-      return {
-        ...size,
-        type: sizeTypes[size.multiplier],
-      };
-    });
-    return {
-      sizes,
-    };
+  computed: {
+    ...mapState("Builder", ["sizes", "pizza"]),
   },
   methods: {
-    changed(transferData) {
-      const currentSize = this.sizes.find(
-        (size) => size.type === transferData.diameter
-      );
-      this.$emit("changed", {
-        ...transferData,
-        multiplier: currentSize.multiplier,
-      });
-    },
+    ...mapActions("Builder", ["setOption"]),
   },
 };
 </script>

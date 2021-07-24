@@ -4,21 +4,21 @@
       <h2 class="title title--small sheet__title">Выберите тесто</h2>
       <div class="sheet__content dough">
         <label
-          v-for="(dough, index) in doughItems"
+          v-for="(doughItem, index) in dough"
           :key="index"
-          :class="`dough__input dough__input--${dough.type}`"
+          :class="`dough__input dough__input--${doughItem.type}`"
         >
           <SelectorItem
-            :name="dough.name"
-            :description="dough.description"
-            :transferData="{ dough: dough.type, doughPrice: dough.price }"
+            :name="doughItem.name"
+            :description="doughItem.description"
+            :transferData="{ option: 'dough', value: doughItem }"
           >
             <RadioButton
               name="dough"
-              :value="dough.type"
+              :value="doughItem"
               className="visually-hidden"
-              :checked="dough.type === currentDough"
-              @changed="changed"
+              :checked="doughItem.type === pizza.dough.type"
+              @setOption="setOption"
             />
           </SelectorItem>
         </label>
@@ -27,13 +27,10 @@
   </div>
 </template>
 <script>
+import { mapState, mapActions } from "vuex";
+
 import SelectorItem from "@/common/components/SelectorItem";
 import RadioButton from "@/common/components/RadioButton";
-
-const doughType = {
-  Тонкое: "light",
-  Толстое: "large",
-};
 
 export default {
   name: "BuilderDoughSelector",
@@ -41,31 +38,11 @@ export default {
     SelectorItem,
     RadioButton,
   },
-  props: {
-    doughList: {
-      type: Array,
-      default: () => [],
-    },
-    currentDough: {
-      type: String,
-      default: "light",
-    },
-  },
-  data() {
-    const doughItems = this.doughList.map((dough) => {
-      return {
-        ...dough,
-        type: doughType[dough.name],
-      };
-    });
-    return {
-      doughItems,
-    };
+  computed: {
+    ...mapState("Builder", ["dough", "pizza"]),
   },
   methods: {
-    changed(transferData) {
-      this.$emit("changed", transferData);
-    },
+    ...mapActions("Builder", ["setOption"]),
   },
 };
 </script>
