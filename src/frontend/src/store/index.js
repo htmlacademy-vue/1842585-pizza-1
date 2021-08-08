@@ -1,8 +1,10 @@
 import { uniqueId } from "lodash";
 import Vue from "vue";
 import Vuex from "vuex";
+import VuexPlugins from "@/plugins/vuexPlugins";
 
 import modules from "@/store/modules";
+
 import {
   ADD_NOTIFICATION,
   DELETE_NOTIFICATION,
@@ -12,6 +14,7 @@ import {
   DELETE_ENTITY,
   CHANGE_INGREDIENT,
   CHANGE_OPTION,
+  SET_BOOLEAN,
 } from "@/store/mutations-types";
 import { MESSAGE_LIVE_TIME } from "@/common/constants";
 
@@ -19,6 +22,7 @@ Vue.use(Vuex);
 
 const state = () => ({
   notifications: [],
+  loading: true,
 });
 
 const mutations = {
@@ -59,7 +63,7 @@ const mutations = {
       : (state = { ...state, ...value });
   },
   [ADD_ENTITY](state, { module, entity, value }) {
-    const el = { ...value, id: uniqueId() };
+    const el = { ...value };
     if (module) {
       state[module][entity].push(el);
     } else {
@@ -88,13 +92,21 @@ const mutations = {
       state[entity] = state[entity].filter((e) => e.id !== id);
     }
   },
+  [SET_BOOLEAN](state, { module, entity, value }) {
+    module ? (state[module][entity] = value) : (state[entity] = value);
+  },
 };
 
 const actions = {
   async init({ dispatch }) {
-    dispatch("Builder/query");
+    dispatch("setLoading", true);
+    if (this.$jwt.getToken()) {
+      dispatch("Auth/query");
+    }
+    await dispatch("Builder/query");
     dispatch("Builder/resetPizza");
-    dispatch("Cart/query");
+    await dispatch("Cart/query");
+    dispatch("setLoading", false);
   },
   async createNotification({ commit }, { ...notification }) {
     const uniqueNotification = {
@@ -109,11 +121,19 @@ const actions = {
       MESSAGE_LIVE_TIME
     );
   },
+  setLoading({ commit }, value) {
+    commit(SET_BOOLEAN, {
+      module: null,
+      entity: "loading",
+      value,
+    });
+  },
 };
 
 export default new Vuex.Store({
   state,
   mutations,
   actions,
+  plugins: [VuexPlugins],
   modules,
 });

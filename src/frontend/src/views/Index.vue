@@ -19,7 +19,7 @@
             type="text"
             name="pizza_name"
             placeholder="Введите название пиццы"
-            :value="pizza.name"
+            :value="pizzaName"
             @input="inputText"
             required
           />
@@ -29,6 +29,7 @@
         <BuilderPriceCounter />
       </div>
     </div>
+    <router-view />
   </form>
 </template>
 
@@ -58,6 +59,9 @@ export default {
   },
   computed: {
     ...mapState("Builder", ["pizza"]),
+    pizzaName() {
+      return this.pizza?.name;
+    },
   },
   methods: {
     ...mapActions("Builder", ["setName"]),

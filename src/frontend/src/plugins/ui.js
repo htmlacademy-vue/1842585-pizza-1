@@ -1,0 +1,20 @@
+import Vue from "vue";
+import AppModal from "@/common/components/AppModal";
+import AppInput from "@/common/components/AppInput";
+import AppLayout from "@/layouts/AppLayout";
+import AppNotifications from "@/common/components/AppNotifications";
+import AppDrag from "@/common/components/AppDrag";
+import AppDrop from "@/common/components/AppDrop";
+import ItemCounter from "@/common/components/ItemCounter";
+import RadioButton from "@/common/components/RadioButton";
+import SelectorItem from "@/common/components/SelectorItem";
+
+Vue.component("AppModal", AppModal);
+Vue.component("AppLayout", AppLayout);
+Vue.component("AppInput", AppInput);
+Vue.component("AppNotifications", AppNotifications);
+Vue.component("AppDrag", AppDrag);
+Vue.component("AppDrop", AppDrop);
+Vue.component("ItemCounter", ItemCounter);
+Vue.component("RadioButton", RadioButton);
+Vue.component("SelectorItem", SelectorItem);

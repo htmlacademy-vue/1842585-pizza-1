@@ -1,7 +1,7 @@
 <template>
   <AppDrop @drop="drop">
     <div class="content__constructor">
-      <div :class="`pizza pizza--foundation--${getSize()}-${pizza.sauce.type}`">
+      <div :class="`pizza pizza--foundation--${getSize()}-${getPizzaType()}`">
         <div class="pizza__wrapper">
           <div v-html="getIngredientsTemplate()"></div>
         </div>
@@ -35,7 +35,7 @@ export default {
       }
     },
     getSize() {
-      return this.pizza.dough.type === "large" ? "big" : "small";
+      return this.pizza?.dough.type === "large" ? "big" : "small";
     },
     getIngredientClass(name, position) {
       return `
@@ -44,9 +44,12 @@ export default {
         ${position === 2 ? "pizza__filling--third" : ""}
       `;
     },
+    getPizzaType() {
+      return this.pizza?.sauce.type;
+    },
     getIngredientsTemplate() {
       let result = "";
-      this.pizza.ingredients.forEach((ingredient) => {
+      this.pizza?.ingredients.forEach((ingredient) => {
         for (let i = 0; i < ingredient.count; i++) {
           result =
             result +

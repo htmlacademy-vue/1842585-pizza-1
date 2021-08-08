@@ -9,8 +9,7 @@
         <div v-if="isEmpty" class="sheet cart__empty">
           <p>В корзине нет ни одного товара</p>
         </div>
-
-        <ul v-if="!isEmpty" class="cart-list sheet">
+        <ul v-else class="cart-list sheet">
           <li v-for="pizza in pizzas" :key="pizza.id" class="cart-list__item">
             <div class="product cart-list__product">
               <img
@@ -98,25 +97,24 @@
             <label class="cart-form__select">
               <span class="cart-form__label">Получение заказа:</span>
 
-              <select @input="inputText" name="reciveType" class="select">
+              <select v-model="reciveType" name="reciveType" class="select">
                 <option
-                  v-for="(reciveType, index) in reciveTypes"
+                  v-for="(type, index) in reciveTypes"
                   :key="index"
-                  :value="reciveType.value"
+                  :value="type.value"
                 >
-                  {{ reciveType.name }}
+                  {{ type.name }}
                 </option>
               </select>
             </label>
 
             <label class="input input--big-label">
               <span>Контактный телефон:</span>
-              <input
+              <AppInput
                 type="text"
                 name="tel"
-                :value="tel"
+                v-model="tel"
                 placeholder="+7 999-999-99-99"
-                @input="inputText"
               />
             </label>
 
@@ -126,12 +124,11 @@
               <div class="cart-form__input">
                 <label class="input">
                   <span>Улица*</span>
-                  <input
+                  <AppInput
                     type="text"
                     name="street"
-                    :value="street"
-                    @input="inputText"
-                    required
+                    v-model="street"
+                    :error-text="validations.street.error"
                   />
                 </label>
               </div>
@@ -139,12 +136,11 @@
               <div class="cart-form__input cart-form__input--small">
                 <label class="input">
                   <span>Дом*</span>
-                  <input
+                  <AppInput
                     type="text"
                     name="house"
-                    :value="house"
-                    @input="inputText"
-                    required
+                    v-model="house"
+                    :error-text="validations.house.error"
                   />
                 </label>
               </div>
@@ -152,12 +148,7 @@
               <div class="cart-form__input cart-form__input--small">
                 <label class="input">
                   <span>Квартира</span>
-                  <input
-                    type="text"
-                    name="apartment"
-                    :value="apartment"
-                    @input="inputText"
-                  />
+                  <AppInput type="text" name="apartment" v-model="apartment" />
                 </label>
               </div>
             </div>
@@ -179,13 +170,13 @@
       </div>
 
       <div class="footer__submit">
-        <button type="submit" class="button" @click.prevent="openPopup">
+        <button type="submit" class="button" @click.prevent="addOrder">
           Оформить заказ
         </button>
       </div>
     </section>
 
-    <section v-if="popupOpen" class="popup">
+    <AppModal :popupOpen="popupOpen">
       <a href="#" class="close" @click.prevent="closePopup">
         <span class="visually-hidden">Закрыть попап</span>
       </a>
@@ -198,69 +189,118 @@
           Отлично, я жду!
         </a>
       </div>
-    </section>
+    </AppModal>
   </form>
 </template>
 <script>
 import { mapState, mapActions, mapGetters } from "vuex";
 
 import ItemCounter from "@/common/components/ItemCounter";
-import { reciveTypes, INPUT_TEXT_TIME } from "@/common/constants";
+import { reciveTypes } from "@/common/constants";
+import { getIngredientDescr, getTypeDescr } from "@/common/helpers";
+import validator from "@/common/validator";
 
 export default {
   name: "Cart",
+  mixins: [validator],
   components: {
     ItemCounter,
   },
   data() {
     return {
+      getIngredientDescr,
+      getTypeDescr,
       reciveTypes,
       timeout: null,
       popupOpen: false,
+      tel: "",
+      street: "",
+      house: "",
+      apartment: "",
+      reciveType: 1,
+      validations: {
+        street: {
+          error: "",
+          rules: ["required"],
+        },
+        house: {
+          error: "",
+          rules: ["required"],
+        },
+      },
     };
   },
+  watch: {
+    street() {
+      this.$clearValidationErrors();
+    },
+    house() {
+      this.$clearValidationErrors();
+    },
+  },
   computed: {
-    ...mapState("Cart", [
-      "pizzas",
-      "additional",
-      "reciveType",
-      "tel",
-      "street",
-      "house",
-      "apartment",
-    ]),
+    ...mapState("Auth", ["user"]),
+    ...mapState("Cart", ["pizzas", "additional"]),
     ...mapGetters("Cart", ["sum", "pizzaSum"]),
     isEmpty() {
       return this.pizzas.length === 0;
     },
   },
   methods: {
-    ...mapActions("Cart", ["updatePizza", "updateAdditional", "setOption"]),
+    ...mapActions("Cart", [
+      "updatePizza",
+      "updateAdditional",
+      "setOption",
+      "createOrder",
+    ]),
     ...mapActions("Builder", ["setPizza"]),
     changePizza(pizza) {
       this.setPizza(pizza);
       this.$router.push("/");
     },
-    getIngredientDescr(ingredients) {
-      return ingredients.reduce((prevDecr, ingredient) => {
-        return `${prevDecr}${
-          prevDecr === "" ? "" : ", "
-        } ${ingredient.name.toLowerCase()}`;
-      }, "");
-    },
-    getTypeDescr(type) {
-      return type === "light" ? "на тонком тесте." : "на толстом тесте.";
-    },
-    inputText($event) {
-      if (this.timeout) {
-        clearTimeout(this.timeout);
+    addOrder() {
+      if (
+        !this.$validateFields(
+          { street: this.street, house: this.house },
+          this.validations
+        )
+      ) {
+        return;
       }
-      this.timeout = setTimeout(() => {
-        this.setOption({
-          name: $event.target.name,
-          value: $event.target.value,
-        });
-      }, INPUT_TEXT_TIME);
+      const pizzas = this.pizzas.map((pizza) => {
+        return {
+          name: pizza.name,
+          sauceId: pizza.sauce.id,
+          doughId: pizza.dough.id,
+          sizeId: pizza.size.id,
+          quantity: pizza.count,
+          ingredients: pizza.ingredients.map((ingredient) => {
+            return {
+              ingredientId: ingredient.id,
+              quantity: ingredient.count,
+            };
+          }),
+        };
+      });
+      const additional = this.additional.filter((addItem) => addItem.count > 0);
+      const order = {
+        userId: this.user.id,
+        pizzas,
+        misc: additional.map((addItem) => {
+          return {
+            miscId: addItem.id,
+            quantity: addItem.count,
+          };
+        }),
+        address: {
+          name: "Новый адрес",
+          street: this.street,
+          building: this.house,
+          flat: this.apartment,
+        },
+      };
+      this.createOrder(order);
+      this.openPopup();
     },
     openPopup() {
       this.popupOpen = true;

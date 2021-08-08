@@ -9,7 +9,6 @@ import {
   sauceTypes,
   sizeTypes,
 } from "@/common/constants";
-import pizza from "@/static/pizza.json";
 import { getSum } from "@/common/helpers";
 
 const module = "Builder";
@@ -25,6 +24,19 @@ const initialPizza = (doughValue, sauceValue, sizeValue) => {
 
 export default {
   namespaced: true,
+  state: {
+    name: "",
+    dough: [],
+    ingredients: [],
+    sauces: [],
+    sizes: [],
+    pizza: {
+      dough: {},
+      ingredients: [],
+      sauce: {},
+      size: {},
+    },
+  },
   getters: {
     getIngredient: (state) => (type) => {
       let currentIngredient = state.pizza.ingredients.find((ingredient) => {
@@ -45,27 +57,31 @@ export default {
     },
   },
   actions: {
-    query({ commit }) {
-      const dough = pizza.dough.map((doughItem) => {
+    async query({ commit }) {
+      let data = await this.$api.dough.query();
+      const dough = data.map((doughItem) => {
         return {
           ...doughItem,
           type: doughType[doughItem.name],
         };
       });
-      const ingredients = pizza.ingredients.map((ingredient) => {
+      data = await this.$api.ingredients.query();
+      const ingredients = data.map((ingredient) => {
         return {
           ...ingredient,
           type: ingredientTypes[ingredient.name],
           maxCount: 3,
         };
       });
-      const sauces = pizza.sauces.map((sauce) => {
+      data = await this.$api.sauces.query();
+      const sauces = data.map((sauce) => {
         return {
           ...sauce,
           type: sauceTypes[sauce.name],
         };
       });
-      const sizes = pizza.sizes.map((size) => {
+      data = await this.$api.sizes.query();
+      const sizes = data.map((size) => {
         return {
           ...size,
           type: sizeTypes[size.multiplier],
