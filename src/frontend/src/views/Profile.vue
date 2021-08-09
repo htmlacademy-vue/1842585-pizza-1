@@ -152,7 +152,6 @@ export default {
   },
   data() {
     return {
-      getAddressDescr,
       currentAddress: {
         ...defaultAddress,
       },
@@ -189,6 +188,7 @@ export default {
   },
   methods: {
     ...mapActions("Auth", ["addAddress", "deleteAddress"]),
+    getAddressDescr,
     changeAddress(id) {
       const address = this.addresses.find((address) => address.id === id);
       if (address) {

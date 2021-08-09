@@ -127,7 +127,7 @@
                   <AppInput
                     type="text"
                     name="street"
-                    v-model="street"
+                    v-model="address.street"
                     :error-text="validations.street.error"
                   />
                 </label>
@@ -138,9 +138,9 @@
                   <span>Дом*</span>
                   <AppInput
                     type="text"
-                    name="house"
-                    v-model="house"
-                    :error-text="validations.house.error"
+                    name="building"
+                    v-model="address.building"
+                    :error-text="validations.building.error"
                   />
                 </label>
               </div>
@@ -148,7 +148,7 @@
               <div class="cart-form__input cart-form__input--small">
                 <label class="input">
                   <span>Квартира</span>
-                  <AppInput type="text" name="apartment" v-model="apartment" />
+                  <AppInput type="text" name="flat" v-model="address.flat" />
                 </label>
               </div>
             </div>
@@ -213,17 +213,20 @@ export default {
       reciveTypes,
       timeout: null,
       popupOpen: false,
+      address: {
+        name: "Новый адрес",
+        street: "",
+        building: "",
+        flat: "",
+      },
       tel: "",
-      street: "",
-      house: "",
-      apartment: "",
       reciveType: 1,
       validations: {
         street: {
           error: "",
           rules: ["required"],
         },
-        house: {
+        building: {
           error: "",
           rules: ["required"],
         },
@@ -261,45 +264,18 @@ export default {
     addOrder() {
       if (
         !this.$validateFields(
-          { street: this.street, house: this.house },
+          { street: this.address.street, building: this.address.building },
           this.validations
         )
       ) {
         return;
       }
-      const pizzas = this.pizzas.map((pizza) => {
-        return {
-          name: pizza.name,
-          sauceId: pizza.sauce.id,
-          doughId: pizza.dough.id,
-          sizeId: pizza.size.id,
-          quantity: pizza.count,
-          ingredients: pizza.ingredients.map((ingredient) => {
-            return {
-              ingredientId: ingredient.id,
-              quantity: ingredient.count,
-            };
-          }),
-        };
-      });
-      const additional = this.additional.filter((addItem) => addItem.count > 0);
-      const order = {
+      this.createOrder({
         userId: this.user.id,
-        pizzas,
-        misc: additional.map((addItem) => {
-          return {
-            miscId: addItem.id,
-            quantity: addItem.count,
-          };
-        }),
-        address: {
-          name: "Новый адрес",
-          street: this.street,
-          building: this.house,
-          flat: this.apartment,
-        },
-      };
-      this.createOrder(order);
+        pizzas: this.pizzas,
+        additional: this.additional,
+        address: this.address,
+      });
       this.openPopup();
     },
     openPopup() {

@@ -101,11 +101,9 @@ const actions = {
   async init({ dispatch }) {
     dispatch("setLoading", true);
     if (this.$jwt.getToken()) {
-      dispatch("Auth/query");
+      await dispatch("Auth/query");
     }
-    await dispatch("Builder/query");
-    dispatch("Builder/resetPizza");
-    await dispatch("Cart/query");
+    await Promise.all([dispatch("Builder/query"), dispatch("Cart/query")]);
     dispatch("setLoading", false);
   },
   async createNotification({ commit }, { ...notification }) {

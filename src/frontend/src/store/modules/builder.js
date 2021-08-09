@@ -57,49 +57,53 @@ export default {
     },
   },
   actions: {
-    async query({ commit }) {
-      let data = await this.$api.dough.query();
-      const dough = data.map((doughItem) => {
-        return {
-          ...doughItem,
-          type: doughType[doughItem.name],
-        };
-      });
-      data = await this.$api.ingredients.query();
-      const ingredients = data.map((ingredient) => {
-        return {
-          ...ingredient,
-          type: ingredientTypes[ingredient.name],
-          maxCount: 3,
-        };
-      });
-      data = await this.$api.sauces.query();
-      const sauces = data.map((sauce) => {
-        return {
-          ...sauce,
-          type: sauceTypes[sauce.name],
-        };
-      });
-      data = await this.$api.sizes.query();
-      const sizes = data.map((size) => {
-        return {
-          ...size,
-          type: sizeTypes[size.multiplier],
-        };
-      });
-      commit(
-        SET_ENTITY,
-        {
-          module,
-          value: {
-            dough,
-            ingredients,
-            sauces,
-            sizes,
+    async query({ dispatch, commit }) {
+      Promise.all([
+        this.$api.dough.query(),
+        this.$api.ingredients.query(),
+        this.$api.sauces.query(),
+        this.$api.sizes.query(),
+      ]).then((result) => {
+        const dough = result[0].map((doughItem) => {
+          return {
+            ...doughItem,
+            type: doughType[doughItem.name],
+          };
+        });
+        const ingredients = result[1].map((ingredient) => {
+          return {
+            ...ingredient,
+            type: ingredientTypes[ingredient.name],
+            maxCount: 3,
+          };
+        });
+        const sauces = result[2].map((sauce) => {
+          return {
+            ...sauce,
+            type: sauceTypes[sauce.name],
+          };
+        });
+        const sizes = result[3].map((size) => {
+          return {
+            ...size,
+            type: sizeTypes[size.multiplier],
+          };
+        });
+        commit(
+          SET_ENTITY,
+          {
+            module,
+            value: {
+              dough,
+              ingredients,
+              sauces,
+              sizes,
+            },
           },
-        },
-        { root: true }
-      );
+          { root: true }
+        );
+        dispatch("resetPizza");
+      });
     },
     resetPizza({ state, commit }) {
       const pizza = initialPizza(

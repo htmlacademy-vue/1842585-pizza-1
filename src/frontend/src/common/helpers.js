@@ -5,7 +5,6 @@ import {
   CrudApiService,
   OrdersApiService,
 } from "@/services/api.service";
-import { SET_BOOLEAN } from "@/store/mutations-types";
 
 export const capitalize = (string) =>
   `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
@@ -37,26 +36,13 @@ export const getItem = (itemArray, id) => {
   return itemArray.find((item) => item.id === id);
 };
 export const getIngredientDescr = (ingredients) => {
-  return ingredients.reduce((prevDecr, ingredient) => {
-    return `${prevDecr}${
-      prevDecr === "" ? "" : ", "
-    } ${ingredient.name.toLowerCase()}`;
-  }, "");
+  return ingredients.map((ingredient) => ingredient.name).join(", ");
 };
 export const getAddressDescr = (address) => {
   return `${address.street}, д. ${address.building}, оф. ${address.flat}`;
 };
 export const getTypeDescr = (type) => {
   return type === "light" ? "на тонком тесте." : "на толстом тесте.";
-};
-export const setAuth = (store) => {
-  store.$api.auth.setAuthHeader();
-  store.dispatch("Auth/fetchUsers");
-  store.commit(SET_BOOLEAN, {
-    module: "Auth",
-    entity: "isAuthenticated",
-    value: true,
-  });
 };
 export const createResources = (notifier) => {
   return {

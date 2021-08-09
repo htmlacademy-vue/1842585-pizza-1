@@ -44,7 +44,6 @@
 <script>
 import { mapActions } from "vuex";
 import validator from "@/common/validator";
-import { setAuth } from "@/common/helpers";
 
 export default {
   name: "Login",
@@ -85,7 +84,7 @@ export default {
         return;
       }
       await this.login({ email: this.email, password: this.password });
-      setAuth(this.$store);
+      await this.$store.dispatch("Auth/fetchUsers");
       this.$router.push("/");
     },
   },

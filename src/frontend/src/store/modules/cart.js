@@ -113,7 +113,34 @@ export default {
         { root: true }
       );
     },
-    async createOrder({ dispatch }, order) {
+    async createOrder({ dispatch }, { userId, pizzas, additional, address }) {
+      const order = {
+        userId,
+        pizzas: pizzas.map((pizza) => {
+          return {
+            name: pizza.name,
+            sauceId: pizza.sauce.id,
+            doughId: pizza.dough.id,
+            sizeId: pizza.size.id,
+            quantity: pizza.count,
+            ingredients: pizza.ingredients.map((ingredient) => {
+              return {
+                ingredientId: ingredient.id,
+                quantity: ingredient.count,
+              };
+            }),
+          };
+        }),
+        misc: additional
+          .filter((addItem) => addItem.count > 0)
+          .map((addItem) => {
+            return {
+              miscId: addItem.id,
+              quantity: addItem.count,
+            };
+          }),
+        address: cloneDeep(address),
+      };
       await this.$api.orders.post(order);
       dispatch("query");
     },
