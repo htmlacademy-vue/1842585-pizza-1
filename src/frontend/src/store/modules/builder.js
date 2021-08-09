@@ -9,7 +9,6 @@ import {
   sauceTypes,
   sizeTypes,
 } from "@/common/constants";
-import pizza from "@/static/pizza.json";
 import { getSum } from "@/common/helpers";
 
 const module = "Builder";
@@ -25,6 +24,19 @@ const initialPizza = (doughValue, sauceValue, sizeValue) => {
 
 export default {
   namespaced: true,
+  state: {
+    name: "",
+    dough: [],
+    ingredients: [],
+    sauces: [],
+    sizes: [],
+    pizza: {
+      dough: {},
+      ingredients: [],
+      sauce: {},
+      size: {},
+    },
+  },
   getters: {
     getIngredient: (state) => (type) => {
       let currentIngredient = state.pizza.ingredients.find((ingredient) => {
@@ -45,45 +57,53 @@ export default {
     },
   },
   actions: {
-    query({ commit }) {
-      const dough = pizza.dough.map((doughItem) => {
-        return {
-          ...doughItem,
-          type: doughType[doughItem.name],
-        };
-      });
-      const ingredients = pizza.ingredients.map((ingredient) => {
-        return {
-          ...ingredient,
-          type: ingredientTypes[ingredient.name],
-          maxCount: 3,
-        };
-      });
-      const sauces = pizza.sauces.map((sauce) => {
-        return {
-          ...sauce,
-          type: sauceTypes[sauce.name],
-        };
-      });
-      const sizes = pizza.sizes.map((size) => {
-        return {
-          ...size,
-          type: sizeTypes[size.multiplier],
-        };
-      });
-      commit(
-        SET_ENTITY,
-        {
-          module,
-          value: {
-            dough,
-            ingredients,
-            sauces,
-            sizes,
+    async query({ dispatch, commit }) {
+      Promise.all([
+        this.$api.dough.query(),
+        this.$api.ingredients.query(),
+        this.$api.sauces.query(),
+        this.$api.sizes.query(),
+      ]).then((result) => {
+        const dough = result[0].map((doughItem) => {
+          return {
+            ...doughItem,
+            type: doughType[doughItem.name],
+          };
+        });
+        const ingredients = result[1].map((ingredient) => {
+          return {
+            ...ingredient,
+            type: ingredientTypes[ingredient.name],
+            maxCount: 3,
+          };
+        });
+        const sauces = result[2].map((sauce) => {
+          return {
+            ...sauce,
+            type: sauceTypes[sauce.name],
+          };
+        });
+        const sizes = result[3].map((size) => {
+          return {
+            ...size,
+            type: sizeTypes[size.multiplier],
+          };
+        });
+        commit(
+          SET_ENTITY,
+          {
+            module,
+            value: {
+              dough,
+              ingredients,
+              sauces,
+              sizes,
+            },
           },
-        },
-        { root: true }
-      );
+          { root: true }
+        );
+        dispatch("resetPizza");
+      });
     },
     resetPizza({ state, commit }) {
       const pizza = initialPizza(

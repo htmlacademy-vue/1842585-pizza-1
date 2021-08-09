@@ -46,3 +46,24 @@ export const reciveTypes = [
     name: "Дом",
   },
 ];
+export const resources = {
+  AUTH: "auth",
+  ADDRESSES: "addresses",
+  ORDERS: "orders",
+  DOUGH: "dough",
+  INGREDIENTS: "ingredients",
+  MISC: "misc",
+  SAUCES: "sauces",
+  SIZES: "sizes",
+};
+export const notificationTypes = {
+  INFO: "info",
+  SUCCESS: "success",
+  ERROR: "error",
+  WARNING: "warning",
+};
+
+/* eslint-disable */
+export const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+export const urlRegex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/;
+/* eslint-enable */

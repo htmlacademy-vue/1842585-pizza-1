@@ -1,5 +1,6 @@
 <template>
   <component :is="layout" :sum="sum">
+    <AppNotifications />
     <slot />
   </component>
 </template>

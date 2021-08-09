@@ -6,23 +6,16 @@ import {
   UPDATE_ENTITY,
   DELETE_ENTITY,
 } from "@/store/mutations-types";
-import misc from "@/static/misc.json";
 import { getSum } from "@/common/helpers";
 
 const module = "Cart";
-const initialCart = () => {
-  const additional = misc.map((miscItem) => {
+const initialCart = (data) => {
+  const additional = data.map((miscItem) => {
     const newMisc = cloneDeep(miscItem);
     newMisc.count = 0;
-    newMisc.id = uniqueId();
     return newMisc;
   });
   return {
-    reciveType: 1,
-    tel: "",
-    street: "",
-    house: "",
-    apartment: "",
     pizzas: [],
     additional,
   };
@@ -30,13 +23,17 @@ const initialCart = () => {
 
 export default {
   namespaced: true,
+  state: {
+    pizzas: [],
+    additional: [],
+  },
   getters: {
     sum: (state) => {
       let sum = 0;
-      sum = state.pizzas.reduce((prevSum, pizza) => {
+      sum = state?.pizzas?.reduce((prevSum, pizza) => {
         return prevSum + getSum(pizza);
       }, sum);
-      sum = state.additional.reduce((prevSum, addItem) => {
+      sum = state?.additional?.reduce((prevSum, addItem) => {
         return prevSum + addItem.price * addItem.count;
       }, sum);
       return sum;
@@ -46,12 +43,13 @@ export default {
     },
   },
   actions: {
-    query({ commit }) {
+    async query({ commit }) {
+      const misc = await this.$api.misc.query();
       commit(
         SET_ENTITY,
         {
           module,
-          value: initialCart(),
+          value: initialCart(misc),
         },
         { root: true }
       );
@@ -63,7 +61,7 @@ export default {
         {
           module,
           entity: "pizzas",
-          value: data,
+          value: { ...data, id: uniqueId() },
         },
         { root: true }
       );
@@ -104,7 +102,6 @@ export default {
       );
     },
     setOption({ commit }, option) {
-      console.log(option);
       commit(
         SET_ENTITY,
         {
@@ -115,6 +112,37 @@ export default {
         },
         { root: true }
       );
+    },
+    async createOrder({ dispatch }, { userId, pizzas, additional, address }) {
+      const order = {
+        userId,
+        pizzas: pizzas.map((pizza) => {
+          return {
+            name: pizza.name,
+            sauceId: pizza.sauce.id,
+            doughId: pizza.dough.id,
+            sizeId: pizza.size.id,
+            quantity: pizza.count,
+            ingredients: pizza.ingredients.map((ingredient) => {
+              return {
+                ingredientId: ingredient.id,
+                quantity: ingredient.count,
+              };
+            }),
+          };
+        }),
+        misc: additional
+          .filter((addItem) => addItem.count > 0)
+          .map((addItem) => {
+            return {
+              miscId: addItem.id,
+              quantity: addItem.count,
+            };
+          }),
+        address: cloneDeep(address),
+      };
+      await this.$api.orders.post(order);
+      dispatch("query");
     },
   },
 };
