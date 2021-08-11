@@ -3,7 +3,18 @@
     <div class="content__constructor">
       <div :class="`pizza pizza--foundation--${getSize()}-${getPizzaType()}`">
         <div class="pizza__wrapper">
-          <div v-html="getIngredientsTemplate()"></div>
+          <transition-group
+            name="drop"
+            tag="div"
+            enter-active-class="animate__animated animate__fadeIn"
+            leave-active-class="animate__animated animate__fadeOut"
+          >
+            <div
+              v-for="ingredient in ingredients"
+              :key="ingredient.id"
+              :class="ingredient.class"
+            ></div>
+          </transition-group>
         </div>
       </div>
     </div>
@@ -20,6 +31,18 @@ export default {
   },
   computed: {
     ...mapState("Builder", ["pizza"]),
+    ingredients() {
+      const result = [];
+      this.pizza?.ingredients.forEach((ingredient) => {
+        for (let i = 0; i < ingredient.count; i++) {
+          result.push({
+            id: ingredient.type + i,
+            class: this.getIngredientClass(ingredient.type, i),
+          });
+        }
+      });
+      return result;
+    },
   },
   methods: {
     ...mapActions("Builder", ["addIngredient", "setOption"]),
@@ -46,22 +69,6 @@ export default {
     },
     getPizzaType() {
       return this.pizza?.sauce.type;
-    },
-    getIngredientsTemplate() {
-      let result = "";
-      this.pizza?.ingredients.forEach((ingredient) => {
-        for (let i = 0; i < ingredient.count; i++) {
-          result =
-            result +
-            `
-              <div
-                key="${ingredient.type + i}"
-                class="${this.getIngredientClass(ingredient.type, i)}"
-              ></div>
-            `;
-        }
-      });
-      return result;
     },
   },
 };
