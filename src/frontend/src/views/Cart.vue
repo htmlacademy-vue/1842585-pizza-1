@@ -175,7 +175,6 @@
         </button>
       </div>
     </section>
-
     <AppModal :popupOpen="popupOpen">
       <a href="#" class="close" @click.prevent="closePopup">
         <span class="visually-hidden">Закрыть попап</span>
@@ -211,7 +210,6 @@ export default {
       getIngredientDescr,
       getTypeDescr,
       reciveTypes,
-      timeout: null,
       popupOpen: false,
       address: {
         name: "Новый адрес",
@@ -268,6 +266,10 @@ export default {
           this.validations
         )
       ) {
+        return;
+      }
+      if (!this.user) {
+        this.$notifier.info("Для отправки заказа необходимо авторизоваться!");
         return;
       }
       this.createOrder({

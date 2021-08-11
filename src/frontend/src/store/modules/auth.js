@@ -69,26 +69,32 @@ export default {
         );
       }
     },
-    async fetchUsers({ commit }) {
+    async fetchUsers({ commit, dispatch }) {
       this.$api.auth.setAuthHeader();
-      const user = await this.$api.auth.getMe();
-      commit(
-        SET_ENTITY,
-        {
-          module,
-          value: { user },
-        },
-        { root: true }
-      );
-      commit(
-        SET_BOOLEAN,
-        {
-          module: "Auth",
-          entity: "isAuthenticated",
-          value: true,
-        },
-        { root: true }
-      );
+      this.$api.auth
+        .getMe()
+        .then((user) => {
+          commit(
+            SET_ENTITY,
+            {
+              module,
+              value: { user },
+            },
+            { root: true }
+          );
+          commit(
+            SET_BOOLEAN,
+            {
+              module: "Auth",
+              entity: "isAuthenticated",
+              value: true,
+            },
+            { root: true }
+          );
+        })
+        .catch(() => {
+          dispatch("logout");
+        });
     },
     async login({ state }, value) {
       if (!state.isAuthenticated) {

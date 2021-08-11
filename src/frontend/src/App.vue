@@ -1,7 +1,13 @@
 <template>
   <div id="app">
     <AppLayout v-if="!loading">
-      <router-view />
+      <transition
+        name="slide"
+        appear
+        enter-active-class="animate__animated animate__slideInRight"
+      >
+        <router-view />
+      </transition>
     </AppLayout>
     <div v-else>Идет загрузка</div>
   </div>

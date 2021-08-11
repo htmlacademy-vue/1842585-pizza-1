@@ -7,7 +7,7 @@ export const getToken = () => {
 };
 
 // метод для сохранения токена по ключу в LocalStorage
-export const saveToken = token => {
+export const saveToken = (token) => {
   window.localStorage.setItem(ID_TOKEN_KEY, token);
 };
 // метод для удаления токена по ключу из LocalStorage
