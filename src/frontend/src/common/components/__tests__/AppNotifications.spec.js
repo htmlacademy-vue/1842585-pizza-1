@@ -1,5 +1,5 @@
 import { shallowMount } from "@vue/test-utils";
-import AppNotifications from "@/common/components/AppNotifications";
+import AppNotifications from "../AppNotifications";
 
 describe("AppNotifications", () => {
   const mocks = {

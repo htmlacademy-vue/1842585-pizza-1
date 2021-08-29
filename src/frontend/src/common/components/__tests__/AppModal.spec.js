@@ -1,5 +1,5 @@
 import { shallowMount } from "@vue/test-utils";
-import AppModal from "@/common/components/AppModal";
+import AppModal from "../AppModal";
 
 describe("AppModal", () => {
   const elementClass = "popup";

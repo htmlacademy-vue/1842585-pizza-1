@@ -1,5 +1,5 @@
-import { shallowMount } from "@vue/test-utils";
-import ItemCounter from "@/common/components/ItemCounter";
+import {shallowMount} from "@vue/test-utils";
+import ItemCounter from "../ItemCounter";
 
 describe("ItemCounter", () => {
   const elementClass = "counter";
@@ -10,11 +10,8 @@ describe("ItemCounter", () => {
       count: 0,
       maxCount: 3,
     },
-    buttonClass: "",
+    buttonClass: "counter__button--disabled",
   };
-  const listeners = {
-    click: null,
-  }
 
   let wrapper;
 
@@ -24,14 +21,6 @@ describe("ItemCounter", () => {
 
   beforeEach(() => {
     propsData.item.count = 0;
-    listeners.click = jest.fn(count => {
-      propsData.item.count = Math.max(
-        propsData.item.maxCount
-          ? Math.min(propsData.item.count + count, propsData.item.maxCount)
-          : propsData.item.count + count,
-        0
-      );
-    });
   });
 
   afterEach(() => {
@@ -39,53 +28,49 @@ describe("ItemCounter", () => {
   });
 
   it("It sets initial count", () => {
-    createComponent({ propsData });
+    createComponent({propsData});
     expect(+wrapper.find("input").element.value).toBe(propsData.item.count);
   });
 
   it("Has div counter", () => {
-    createComponent({ propsData });
+    createComponent({propsData});
     expect(wrapper.find(`div.${elementClass}`)).toBeTruthy();
   });
 
   it("Has button minus count", () => {
-    createComponent({ propsData });
+    createComponent({propsData});
     expect(wrapper.find(`.${buttonClassMinus}`)).toBeTruthy();
   });
 
   it("Has button plus count", () => {
-    createComponent({ propsData });
+    createComponent({propsData});
     expect(wrapper.find(`.${buttonClassPlus}`)).toBeTruthy();
   });
 
   it("It emits an button minus event when click", async () => {
-    createComponent({ propsData, listeners });
+    propsData.item.count = 3;
+    createComponent({propsData});
     let button = wrapper.find(`.${buttonClassMinus}`);
     await button.trigger("click");
-    expect(listeners.click).toHaveBeenCalled();
+    expect(wrapper.emitted("setCount")).toEqual([[{...propsData.item, count: 2}]]);
   });
 
   it("It emits an button plus event when click", async () => {
-    createComponent({ propsData, listeners });
+    createComponent({propsData});
     let button = wrapper.find(`.${buttonClassPlus}`);
     await button.trigger("click");
-    expect(listeners.click).toHaveBeenCalled();
+    expect(wrapper.emitted("setCount")).toEqual([[{...propsData.item, count: 1}]]);
   });
 
-  it("It decreases value when click", async () => {
+  it("Button minus is disabled if count = 0", () => {
+    createComponent({propsData});
+    expect(wrapper.find(`.${buttonClassMinus}`).element.disabled).toBeTruthy();
+  });
+
+  it("Button plus is disabled if count = maxCount", () => {
     propsData.item.count = propsData.item.maxCount;
-    const prevCount = propsData.item.count;
-    createComponent({ propsData, listeners });
-    let button = wrapper.find(`.${buttonClassMinus}`);
-    await button.trigger("click");
-    expect(propsData.item.count).toBeLessThan(prevCount);
+    createComponent({propsData});
+    expect(wrapper.find(`.${buttonClassPlus}`).element.disabled).toBeTruthy();
   });
 
-  it("It increases value when click", async () => {
-    const prevCount = propsData.item.count;
-    createComponent({ propsData, listeners });
-    let button = wrapper.find(`.${buttonClassPlus}`);
-    await button.trigger("click");
-    expect(propsData.item.count).toBeGreaterThan(prevCount);
-  });
 });

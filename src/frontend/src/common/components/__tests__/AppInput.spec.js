@@ -1,5 +1,5 @@
 import { shallowMount } from "@vue/test-utils";
-import AppInput from "@/common/components/AppInput";
+import AppInput from "../AppInput";
 
 describe("AppInput", () => {
   const errorClass = "text-field__input--error";
