@@ -8,6 +8,12 @@ import {SET_BOOLEAN, SET_ENTITY} from "@/store/mutations-types";
 const localVue = createLocalVue();
 localVue.use(Vuex);
 
+const mocks = {
+  $router: {
+    push: jest.fn()
+  },
+};
+
 const login = store => {
   store.commit(
     SET_BOOLEAN,
@@ -15,14 +21,20 @@ const login = store => {
       module: "Auth",
       entity: "isAuthenticated",
       value: true,
-    }
+    },
+    {
+      root: true,
+    },
   );
   store.commit(
     SET_ENTITY,
     {
       module: "Auth",
       value: { user },
-    }
+    },
+    {
+      root: true,
+    },
   );
 };
 
@@ -40,6 +52,7 @@ describe("AppLayoutHeader", () => {
         logout: jest.fn(),
       },
     };
+    mocks.$router.push = jest.fn();
     store = generateMockStore(actions);
   });
 
@@ -61,6 +74,11 @@ describe("AppLayoutHeader", () => {
   it("block user is rendered", () => {
     createComponent({localVue, store, stubs});
     expect(wrapper.find(".header__user").exists()).toBeTruthy();
+  });
+
+  it("sum = 0", () => {
+    createComponent({localVue, store, stubs});
+    expect(wrapper.find(".header__cart").html()).toContain("0 ₽");
   });
 
   it("is logout", async () => {

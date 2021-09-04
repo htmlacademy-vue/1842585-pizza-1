@@ -1,4 +1,4 @@
-import { uniqueId } from "lodash";
+import {uniqueId} from "lodash";
 import Vue from "vue";
 import Vuex from "vuex";
 import VuexPlugins from "@/plugins/vuexPlugins";
@@ -25,7 +25,7 @@ const state = () => ({
   loading: true,
 });
 
-const mutations = {
+export const mutations = {
   [ADD_NOTIFICATION](state, notification) {
     state.notifications = [...state.notifications, notification];
   },
@@ -97,7 +97,7 @@ const mutations = {
   },
 };
 
-const actions = {
+export const actions = {
   async init({ dispatch }) {
     dispatch("setLoading", true);
     if (this.$jwt.getToken()) {
