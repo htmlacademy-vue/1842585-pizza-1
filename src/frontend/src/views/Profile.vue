@@ -109,11 +109,17 @@
           <button
             type="button"
             class="button button--transparent"
+            data-test="delete-address"
             @click.prevent="deleteAddr(currentAddress.id)"
           >
             Удалить
           </button>
-          <button type="submit" class="button" @click.prevent="saveAddress">
+          <button
+            type="submit"
+            class="button"
+            data-test="save-address"
+            @click.prevent="saveAddress"
+          >
             Сохранить
           </button>
         </div>
