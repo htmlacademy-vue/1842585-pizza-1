@@ -3,7 +3,7 @@ import Vuex from "vuex";
 import { generateMockStore } from "@/store/mocks";
 
 import { ingredients, sauces, pizza } from "@/common/mocks/pizza";
-import { CHANGE_OPTION } from "@/store/mutations-types";
+import { SET_ENTITY } from "@/store/mutations-types";
 import BuilderIngredientsSelector from "../BuilderIngredientsSelector";
 import SelectorItem from "@/common/components/SelectorItem";
 import RadioButton from "@/common/components/RadioButton";
@@ -16,49 +16,43 @@ localVue.component("RadioButton", RadioButton);
 localVue.component("ItemCounter", ItemCounter);
 
 const initiateSauce = (store) => {
-  store.commit(CHANGE_OPTION, {
-    module: "Builder",
-    entity: "sauces",
-    value: sauces,
-  }, { root: true });
-  store.commit(CHANGE_OPTION, {
-    module: "Builder",
-    entity: "pizza",
-    value: pizza,
-  }, { root: true });
+  store.commit(
+    SET_ENTITY,
+    {
+      module: "Builder",
+      value: {
+        sauces,
+        pizza,
+      },
+    },
+    { root: true }
+  );
 };
 
 const initiateIngredients = (store) => {
-  store.commit(CHANGE_OPTION, {
-    module: "Builder",
-    entity: "ingredients",
-    value: ingredients,
-  }, { root: true });
-  store.commit(CHANGE_OPTION, {
-    module: "Builder",
-    entity: "pizza",
-    value: pizza,
-  }, { root: true });
+  store.commit(
+    SET_ENTITY,
+    {
+      module: "Builder",
+      value: {
+        ingredients,
+        pizza,
+      },
+    },
+    { root: true }
+  );
 };
 
 describe("BuilderIngredientsSelector", () => {
   let store;
   let wrapper;
-  let getters;
 
   const createComponent = (options) => {
     wrapper = mount(BuilderIngredientsSelector, options);
   };
 
   beforeEach(() => {
-    getters = {
-      getIngredient: jest.fn((type) => {
-        return ingredients.find((ingredient) => {
-          return ingredient.type === type;
-        })
-      }),
-    }
-    store = generateMockStore(null, getters);
+    store = generateMockStore();
   });
 
   afterEach(() => {
@@ -89,7 +83,10 @@ describe("BuilderIngredientsSelector", () => {
     sauces.forEach((sauce, index) => {
       const selectorProps = selectorList.wrappers[index].props();
       expect(selectorProps.description).toBe(sauce.name);
-      expect(selectorProps.transferData).toEqual({option: "sauce", value: sauce});
+      expect(selectorProps.transferData).toEqual({
+        option: "sauce",
+        value: sauce,
+      });
     });
   });
 
@@ -123,7 +120,7 @@ describe("BuilderIngredientsSelector", () => {
     ingredients.forEach((ingredient, index) => {
       const selectorProps = selectorList.wrappers[index].props();
       expect(selectorProps.description).toBe(ingredient.name);
-      expect(selectorProps.transferData).toEqual({count: 0, ...ingredient});
+      expect(selectorProps.transferData).toEqual({ count: 0, ...ingredient });
     });
   });
 
@@ -133,8 +130,7 @@ describe("BuilderIngredientsSelector", () => {
     const counterList = wrapper.findAllComponents(ItemCounter);
     ingredients.forEach((ingredient, index) => {
       const counterProps = counterList.wrappers[index].props();
-      expect(counterProps.item).toEqual({count: 0, ...ingredient});
+      expect(counterProps.item).toEqual({ count: 0, ...ingredient });
     });
   });
-
 });

@@ -17,6 +17,7 @@
               type="email"
               name="email"
               placeholder="example@mail.ru"
+              data-test="email-component"
               :error-text="validations.email.error"
             />
           </label>
@@ -30,6 +31,7 @@
               name="password"
               v-model="password"
               placeholder="***********"
+              data-test="password-component"
               :error-text="validations.password.error"
             />
           </label>
@@ -85,7 +87,7 @@ export default {
       }
       await this.login({ email: this.email, password: this.password });
       await this.$store.dispatch("Auth/fetchUsers");
-      this.$router.push("/");
+      await this.$router.push("/");
     },
   },
 };

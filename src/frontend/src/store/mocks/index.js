@@ -10,7 +10,7 @@ const initState = () => ({
   notifications: [],
 });
 
-export const generateMockStore = (actions, getters) => {
+export const generateMockStore = (actions) => {
   const modulesCopy = cloneDeep(modules);
   if (actions) {
     Object.entries(actions).forEach(([module, actions]) => {
@@ -22,7 +22,6 @@ export const generateMockStore = (actions, getters) => {
     state: initState(),
     mutations,
     modules: modulesCopy,
-    getters,
     plugins: [VuexPlugins],
   });
 };
