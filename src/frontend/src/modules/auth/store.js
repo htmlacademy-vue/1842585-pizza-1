@@ -49,7 +49,7 @@ export default {
           {
             module,
             entity: "addresses",
-            value: data,
+            value: { comment: "", ...data },
           },
           { root: true }
         );

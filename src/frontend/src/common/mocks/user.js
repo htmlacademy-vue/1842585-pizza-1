@@ -13,6 +13,6 @@ export const addresses = [
     street: "Новая улица",
     building: "15",
     flat: "64",
-    comment: "123"
+    comment: "123",
   },
 ];

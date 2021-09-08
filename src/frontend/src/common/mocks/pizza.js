@@ -146,9 +146,9 @@ export const pizza = {
   name: "Test pizza",
   dough: { ...dough[0] },
   ingredients: [
-    {...ingredients[0], count: 1},
-    {...ingredients[1], count: 2},
-    {...ingredients[2], count: 3},
+    { ...ingredients[0], count: 1 },
+    { ...ingredients[1], count: 2 },
+    { ...ingredients[2], count: 3 },
   ],
   sauce: { ...sauces[0] },
   size: { ...sizes[0] },
