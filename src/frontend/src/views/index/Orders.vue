@@ -89,9 +89,12 @@ import {
   getSum,
   getAddressDescr,
 } from "@/common/helpers";
+import { auth } from "@/middlewares";
 
 export default {
   name: "Orders",
+  layout: "AppLayoutProfile",
+  middlewares: [auth],
   created() {
     this.$store.dispatch("Orders/query");
   },

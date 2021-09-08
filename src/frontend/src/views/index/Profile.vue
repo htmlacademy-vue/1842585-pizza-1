@@ -141,6 +141,7 @@
 import { mapActions, mapState } from "vuex";
 import { getAddressDescr } from "@/common/helpers";
 import validator from "@/common/validator";
+import { auth } from "@/middlewares";
 
 const defaultAddress = {
   name: "",
@@ -152,6 +153,8 @@ const defaultAddress = {
 
 export default {
   name: "Profile",
+  layout: "AppLayoutProfile",
+  middlewares: [auth],
   mixins: [validator],
   created() {
     this.$store.dispatch("Auth/getAddresses");
@@ -198,9 +201,12 @@ export default {
     changeAddress(id) {
       const address = this.addresses.find((address) => address.id === id);
       if (address) {
-        this.currentAddress = { ...address };
+        this.currentAddress = { ...defaultAddress, ...address };
       } else {
         this.currentAddress = { ...defaultAddress };
+      }
+      if (!this.currentAddress.comment) {
+        this.currentAddress.comment = "";
       }
       this.modalOpen = true;
     },

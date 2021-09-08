@@ -1,17 +1,16 @@
 import { mount, createLocalVue } from "@vue/test-utils";
 import $validator from "@/common/validator";
-import Login from "../Login";
+import Login from "../index/^Login";
 import AppModal from "@/common/components/AppModal";
 import AppInput from "@/common/components/AppInput";
-import {generateMockStore} from "../../store/mocks";
+import { generateMockStore } from "../../store/mocks";
 
 const localVue = createLocalVue();
-localVue.component('AppModal', AppModal);
-localVue.component('AppInput', AppInput);
+localVue.component("AppModal", AppModal);
+localVue.component("AppInput", AppInput);
 
 describe("Login", () => {
   let routerPush;
-  let dispatch;
   let login;
   let fetchUsers;
   let store;
@@ -21,7 +20,7 @@ describe("Login", () => {
       login,
       fetchUsers,
     },
-  }
+  };
 
   const mocks = {
     $router: {

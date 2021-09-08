@@ -1,9 +1,9 @@
-import {uniqueId} from "lodash";
+import { uniqueId } from "lodash";
 import Vue from "vue";
 import Vuex from "vuex";
 import VuexPlugins from "@/plugins/vuexPlugins";
 
-import modules from "@/store/modules";
+import modules from "@/modules";
 
 import {
   ADD_NOTIFICATION,

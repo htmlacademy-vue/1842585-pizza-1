@@ -2,8 +2,8 @@ import { createLocalVue, mount } from "@vue/test-utils";
 import Vuex from "vuex";
 import { generateMockStore } from "@/store/mocks";
 import { SET_ENTITY } from "@/store/mutations-types";
-import Orders from "../Orders";
-import {orders} from "@/common/mocks/orders";
+import Orders from "../index/Orders";
+import { orders } from "@/common/mocks/orders";
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
@@ -46,7 +46,7 @@ describe("Orders", () => {
       Orders: {
         query: jest.fn(),
         deleteOrder,
-        repeatOrder
+        repeatOrder,
       },
     };
     store = generateMockStore(actions);
@@ -57,23 +57,22 @@ describe("Orders", () => {
   });
 
   it("is render", () => {
-    createElement({localVue, store, mocks});
+    createElement({ localVue, store, mocks });
     expect(wrapper.exists()).toBeTruthy();
   });
 
   it("delete order correctly", async () => {
     initialStore(store);
-    createElement({localVue, store, mocks});
+    createElement({ localVue, store, mocks });
     await wrapper.find("[data-test='delete-button'").trigger("click");
     expect(deleteOrder).toHaveBeenCalled();
   });
 
   it("repeat order correctly", async () => {
     initialStore(store);
-    createElement({localVue, store, mocks});
+    createElement({ localVue, store, mocks });
     await wrapper.find("[data-test='repeat-button'").trigger("click");
     expect(repeatOrder).toHaveBeenCalled();
     expect(routerPush).toHaveBeenCalledWith("/cart");
   });
-
-})
+});

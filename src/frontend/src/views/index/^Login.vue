@@ -46,9 +46,11 @@
 <script>
 import { mapActions } from "vuex";
 import validator from "@/common/validator";
+import { isLoggedIn } from "@/middlewares";
 
 export default {
   name: "Login",
+  middlewares: [isLoggedIn],
   mixins: [validator],
   data() {
     return {
